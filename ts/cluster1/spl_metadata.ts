@@ -1,5 +1,5 @@
 // Import necessary libraries
-import { PublicKey, Keypair } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import wallet from "./wallet/wba-wallet.json";
 import bs58 from "bs58";
 
@@ -28,7 +28,7 @@ const signer = createSignerFromKeypair(umi, keypair);
 umi.use(signerIdentity(signer));
 
 // Define our Mint address
-const mint = new PublicKey("2QEBdYy8SKz6LaeWP2o2CHPQ1Piv7F9FKQV4vxLKTPFf");
+const mint = new PublicKey("B2odVw8GqPZFVoQLN1br3csiXVXT9GHCfp2mAFkBtXao");
 
 // Add the Token Metadata Program
 const token_metadata_program_id = new PublicKey(
@@ -50,34 +50,30 @@ const [metadata_pda, _bump] = PublicKey.findProgramAddressSync(
 
 (async () => {
   try {
-    let tx = createMetadataAccountV3(umi, {
-      //accounts
-      metadata: publicKey(metadata_pda.toString()), // The metadata account's public key
-      mint: publicKey(mint.toString()), // The mint's public key
-      mintAuthority: signer, // The signer who has the authority to mint tokens
-      payer: signer, // The signer who will pay for the transaction
-      updateAuthority: keypair.publicKey, // The public key of the account that has the authority to update the metadata
+    let myTransaction = createMetadataAccountV3(umi, {
+      // accounts
+      metadata: publicKey(metadata_pda.toString()),
+      mint: publicKey(mint.toString()),
+      mintAuthority: signer,
+      // payer: myKeypairSigner,
+      updateAuthority: keypair.publicKey,
       data: {
-        // The metadata to be stored
-        name: "Degen Picks Token", // The name of the token
-        symbol: "DPP", // The symbol of the token
-        uri: "example_uri.com", // The URI where the metadata is stored
-        sellerFeeBasisPoints: 0, // The fee to be paid to the seller, in basis points
-        creators: null, // The creators of the token
-        collection: null, // The collection to which the token belongs
-        uses: null, // The uses of the token
+        name: "Trustless Engineering Credits",
+        symbol: "TEC",
+        uri: "https://solan.ai",
+        sellerFeeBasisPoints: 0,
+        creators: null,
+        collection: null,
+        uses: null,
       },
-      isMutable: true, // Whether the metadata can be updated
-      collectionDetails: null, // The details of the collection to which the token belongs
+      isMutable: true,
+      collectionDetails: null,
     });
 
-    // Send and confirm transaction
-    let result = await tx.sendAndConfirm(umi);
-    console.log(result.signature);
-
-    // Deserialize signature
+    let result = await myTransaction.sendAndConfirm(umi);
     const signature = base58.deserialize(result.signature);
-    console.log(signature[0]);
+
+    console.log(`tx hash: `, signature);
   } catch (e) {
     console.error(`Oops, something went wrong: ${e}`);
   }

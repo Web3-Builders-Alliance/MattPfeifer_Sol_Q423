@@ -4,7 +4,6 @@ import {
   SystemProgram,
   PublicKey,
   Commitment,
-  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import {
   Program,
@@ -16,6 +15,7 @@ import {
 import { WbaVault, IDL } from "./programs/wba_vault";
 import wallet from "./wallet/wba-wallet.json";
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
   getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
@@ -61,42 +61,33 @@ const [vaultAuth, _bump] = PublicKey.findProgramAddressSync(
   program.programId
 );
 
-// Create the vault key
-// Seeds are "vault", vaultAuth
-const vaultKeys = [Buffer.from("vault"), vaultAuth.toBuffer()];
-const [vaultKey, _bump2] = PublicKey.findProgramAddressSync(
-  vaultKeys,
-  program.programId
-);
-
-const token_decimals = 1_000_000_000;
+const token_decimals = 1_000_000n;
 
 // Define our Mint address
-const mint = new PublicKey("2QEBdYy8SKz6LaeWP2o2CHPQ1Piv7F9FKQV4vxLKTPFf");
+const mint = new PublicKey("B2odVw8GqPZFVoQLN1br3csiXVXT9GHCfp2mAFkBtXao");
 
 // Execute our enrollment transaction
 (async () => {
   try {
-    // Get the token account of the fromWallet address, and if it does not exist, create it
+    // Get the token account of the WBA address, and if it does not exist, create it
     const ownerAta = await getOrCreateAssociatedTokenAccount(
       connection,
       keypair,
       mint,
       keypair.publicKey,
-      undefined,
-      commitment
+      undefined
     );
-    // Get the token account of the fromWallet address, and if it does not exist, create it
+    // Get the token account of the vault address, and if it does not exist, create it
     const vaultAta = await getOrCreateAssociatedTokenAccount(
       connection,
       keypair,
       mint,
       vaultAuth,
-      true,
-      commitment
+      true
     );
+    console.log("sending deposit SPL transaction");
     const signature = await program.methods
-      .depositSpl(new BN(100 * token_decimals))
+      .depositSpl(new BN(2000000))
       .accounts({
         owner: keypair.publicKey,
         vaultState,
@@ -106,7 +97,7 @@ const mint = new PublicKey("2QEBdYy8SKz6LaeWP2o2CHPQ1Piv7F9FKQV4vxLKTPFf");
         vaultAta: vaultAta.address,
         tokenMint: mint,
         tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .signers([keypair])
       .rpc();
@@ -114,6 +105,6 @@ const mint = new PublicKey("2QEBdYy8SKz6LaeWP2o2CHPQ1Piv7F9FKQV4vxLKTPFf");
       `Deposit SPL success! Check out your TX here:\n\nhttps://explorer.solana.com/tx/${signature}?cluster=devnet`
     );
   } catch (e) {
-    console.error(`Oops, something went wrong: ${e}`);
+    console.error(`Oops, something went wrong: ${JSON.stringify(e)}`);
   }
 })();

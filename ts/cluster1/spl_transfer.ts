@@ -20,10 +20,12 @@ const commitment: Commitment = "confirmed";
 const connection = new Connection("https://api.devnet.solana.com", commitment);
 
 // Mint address
-const mint = new PublicKey("2QEBdYy8SKz6LaeWP2o2CHPQ1Piv7F9FKQV4vxLKTPFf");
+const mint = new PublicKey("B2odVw8GqPZFVoQLN1br3csiXVXT9GHCfp2mAFkBtXao");
 
 // Recipient address
 const to = new PublicKey("H1fnjEg9pobH5k74eb3nfDDThHfGganjuABABUeebpGf");
+
+const token_decimals = 1_000_000n;
 
 (async () => {
   try {
@@ -54,11 +56,11 @@ const to = new PublicKey("H1fnjEg9pobH5k74eb3nfDDThHfGganjuABABUeebpGf");
       fromATA.address,
       toATA.address,
       keypair.publicKey,
-      10
+      10n * token_decimals
     );
 
     console.log(`Your transfer txid: ${signature}`);
   } catch (e) {
-    console.error(`Oops, something went wrong: ${e}`);
+    console.error(`Oops, something went wrong: ${JSON.stringify(e)}`);
   }
 })();
