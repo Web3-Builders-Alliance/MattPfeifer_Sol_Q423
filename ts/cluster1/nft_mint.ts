@@ -10,7 +10,7 @@ import {
   mplTokenMetadata,
 } from "@metaplex-foundation/mpl-token-metadata";
 
-import wallet from "../wba-wallet.json";
+import wallet from "./wallet/wba-wallet.json";
 import bs58 from "bs58";
 
 const RPC_ENDPOINT = "https://api.devnet.solana.com";

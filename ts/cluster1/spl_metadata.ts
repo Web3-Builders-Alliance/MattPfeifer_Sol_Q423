@@ -1,6 +1,6 @@
 // Import necessary libraries
 import { PublicKey, Keypair } from "@solana/web3.js";
-import wallet from "../wba-wallet.json";
+import wallet from "./wallet/wba-wallet.json";
 import bs58 from "bs58";
 
 // Import Metaplex libraries

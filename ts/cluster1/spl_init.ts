@@ -1,6 +1,6 @@
 import { Keypair, Connection, Commitment } from "@solana/web3.js";
 import { createMint } from "@solana/spl-token";
-import wallet from "../wba-wallet.json";
+import wallet from "./wallet/wba-wallet.json";
 import bs58 from "bs58";
 
 // base58 encoded private key
