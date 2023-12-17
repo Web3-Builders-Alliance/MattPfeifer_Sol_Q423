@@ -14,12 +14,12 @@ pub mod anchor_vault {
             to: ctx.accounts.vault.to_account_info()
         };
 
-        let cpi = CpiContext::new(ctx.accounts.system_program.to_account_info(), accounts);
+        let cpi_ctx = CpiContext::new(ctx.accounts.system_program.to_account_info(), accounts);
 
-        transfer(cpi, lamports)
+        transfer(cpi_ctx, lamports)
     }
 
-    pub fn close(ctx: Context<Vault>, lamports: u64) -> Result<()> {
+    pub fn close(ctx: Context<Vault>) -> Result<()> {
         let accounts = Transfer{
             from: ctx.accounts.vault.to_account_info(),
             to: ctx.accounts.owner.to_account_info()
@@ -27,10 +27,10 @@ pub mod anchor_vault {
 
         let signer_seeds: [&[&[u8]]; 1] = [&[b"vault", &ctx.accounts.owner.to_account_info().key.as_ref(), &[ctx.bumps.vault]]];
         
-        let cpi = CpiContext::new_with_signer(ctx.accounts.system_program.to_account_info(), accounts, &signer_seeds);
+        let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.system_program.to_account_info(), accounts, &signer_seeds);
 
 
-        transfer(cpi, lamports)
+        transfer(cpi_ctx, ctx.accounts.vault.lamports())
     }
 
 
